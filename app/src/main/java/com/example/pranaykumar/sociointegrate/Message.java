@@ -31,7 +31,7 @@ public class Message {
   public String getMessage() {
     return mMessage;
   };
-  public String setMessage() {
+  public void setMessage() {
     this.mMessage=mMessage;
   };
 

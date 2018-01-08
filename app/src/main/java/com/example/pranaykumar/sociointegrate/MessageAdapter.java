@@ -50,8 +50,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
   public void onBindViewHolder(ViewHolder viewHolder, int position) {
     Message message = mMessages.get(position);
     Log.d("LOG","position="+position);
-    viewHolder.setMessage(message.getMessage());
+    viewHolder.mMessageView.setText(message.getMessage());
     //viewHolder.setImage(message.getImage());
+    Log.d("LOG","MESSAGE="+message.getMessage());
   }
 
   @Override
@@ -77,7 +78,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
       if (null == mMessageView) return;
       if(null == message) return;
       mMessageView.setText(message);
-      Log.d("LOG","MESSAGE="+message);
+
     }
 
 /*    public void setImage(Bitmap bmp){

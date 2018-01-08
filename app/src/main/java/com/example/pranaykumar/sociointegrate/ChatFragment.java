@@ -97,6 +97,7 @@ public class ChatFragment extends Fragment {
 
     mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
     mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    mAdapter = new MessageAdapter( mMessages);
     mMessagesView.setAdapter(mAdapter);
 
     ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
@@ -129,9 +130,9 @@ public class ChatFragment extends Fragment {
     mMessages.add(new Message(message));
     // mAdapter = new MessageAdapter(mMessages);
     Log.d("LOG","mMessages count="+mMessages.size()+"message="+message);
-    mAdapter = new MessageAdapter( mMessages);
-    mAdapter.notifyItemInserted(0);
-    scrollToBottom();
+
+    mAdapter.notifyDataSetChanged();
+    //scrollToBottom();
   }
 
   private void scrollToBottom() {
