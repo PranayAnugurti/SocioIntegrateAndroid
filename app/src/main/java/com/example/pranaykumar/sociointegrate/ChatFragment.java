@@ -1,9 +1,15 @@
 package com.example.pranaykumar.sociointegrate;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,6 +33,7 @@ import org.json.JSONObject;
  * Created by PRANAYKUMAR on 1/7/2018.
  */
 
+
 public class ChatFragment extends Fragment {
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,10 +48,14 @@ public class ChatFragment extends Fragment {
   private OnFragmentInteractionListener mListener;
   private List<Message> mMessages = new ArrayList<Message>();
   private RecyclerView.Adapter mAdapter;
+  String url="http://192.168.0.102:5000";
+
   private Socket socket;
   {
     try{
-      socket=IO.socket("https://sociointegrate.herokuapp.com/");
+      //socket=IO.socket("https://sociointegrate.herokuapp.com/");
+      socket=IO.socket(Constants.server_url);
+      Log.d("LOG","server_url="+Constants.server_url);
     }catch (URISyntaxException e){
       throw new RuntimeException(e);
     }
@@ -132,7 +143,7 @@ public class ChatFragment extends Fragment {
     Log.d("LOG","mMessages count="+mMessages.size()+"message="+message);
 
     mAdapter.notifyDataSetChanged();
-    //scrollToBottom();
+    scrollToBottom();
   }
 
   private void scrollToBottom() {
