@@ -1,6 +1,7 @@
 package com.example.pranaykumar.sociointegrate;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,15 +44,16 @@ public class PrivateChatFragment extends Fragment {
     private List<Message> mMessages = new ArrayList<Message>();
     private List<User> mUsers = new ArrayList<User>();
     private RecyclerView.Adapter mAdapter;
-    String url="http://192.168.0.102:5000";
+    String url = "http://192.168.0.102:5000";
 
     private Socket socket;
+
     {
-        try{
+        try {
             //socket=IO.socket("https://sociointegrate.herokuapp.com/");
-            socket= IO.socket(Constants.server_url);
-            Log.d("LOG","server_url="+Constants.server_url);
-        }catch (URISyntaxException e){
+            socket = IO.socket(Constants.server_url);
+            Log.d("LOG", "server_url=" + Constants.server_url);
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
@@ -59,11 +61,12 @@ public class PrivateChatFragment extends Fragment {
     public PrivateChatFragment() {
         // Required empty public constructor
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_priavatechat,container,false);
+        return inflater.inflate(R.layout.fragment_priavatechat, container, false);
     }
 
     @Override
@@ -74,20 +77,27 @@ public class PrivateChatFragment extends Fragment {
         //Socket Conncetion Establishment
         socket.connect();
 
-        socket.on("message",handleIncomingMessages);
+        socket.on("private", handleIncomingMessages);
     }
 
-    private Emitter.Listener handleIncomingMessages=new Emitter.Listener(){
+    private Emitter.Listener handleIncomingMessages = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    JSONObject data=(JSONObject)args[0];
+                    JSONObject data = (JSONObject) args[0];
                     String message = null;
-                    try{
-                        message=data.getString("text").toString();
-                        Log.d("LOG",message);
+                    String from = null;
+                    String to = null;
+                    try {
+                        message = data.getString("text").toString();
+                        from = data.getString("from").toString();
+                        to = data.getString("to").toString();
+
+                        Log.d("from Priivate Chat", message + " " + from + " " + to);
+
+                        Log.d("LOG", message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -104,7 +114,7 @@ public class PrivateChatFragment extends Fragment {
 
         mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new MessageAdapter( mMessages,mUsers);
+        mAdapter = new MessageAdapter(mMessages, mUsers);
         mMessagesView.setAdapter(mAdapter);
 
         ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
@@ -119,23 +129,31 @@ public class PrivateChatFragment extends Fragment {
 
 
     }
-    private void sendMessage(){
+
+    private void sendMessage() {
         String message = mInputMessageView.getText().toString().trim();
         mInputMessageView.setText("");
         addMessage(message);
         addUser("me");
         JSONObject sendText = new JSONObject();
-        try{
-            sendText.put("text",message);
-            socket.emit("message", sendText);
-        }catch(JSONException e){
+        try {
+            Constants constants = new Constants();
+            PrivateSocketActivity privateSocketActivity = new PrivateSocketActivity();
+            sendText.put("text", message);
+            sendText.put("fromId", constants.user_id);
+            sendText.put("to", privateSocketActivity.friendsId);
+            socket.emit("private", sendText);
+            Log.d("from Priivate Chat", message + " " + constants.user_id + " " + privateSocketActivity.friendsId);
+
+
+        } catch (JSONException e) {
 
         }
 
     }
 
 
-    private void addUser(String user){
+    private void addUser(String user) {
         mUsers.add(new User(user));
 
     }
@@ -144,7 +162,7 @@ public class PrivateChatFragment extends Fragment {
 
         mMessages.add(new Message(message));
         // mAdapter = new MessageAdapter(mMessages);
-        Log.d("LOG","mMessages count="+mMessages.size()+"message="+message);
+        Log.d("LOG", "mMessages count=" + mMessages.size() + "message=" + message);
 
         mAdapter.notifyDataSetChanged();
         scrollToBottom();
@@ -153,11 +171,13 @@ public class PrivateChatFragment extends Fragment {
     private void scrollToBottom() {
         mMessagesView.scrollToPosition(mAdapter.getItemCount() - 1);
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         socket.disconnect();
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
