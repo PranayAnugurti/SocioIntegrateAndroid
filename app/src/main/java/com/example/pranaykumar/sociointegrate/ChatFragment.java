@@ -40,6 +40,7 @@ public class ChatFragment extends Fragment {
   private RecyclerView mMessagesView;
   private OnFragmentInteractionListener mListener;
   private List<Message> mMessages = new ArrayList<Message>();
+  private List<User> mUsers = new ArrayList<User>();
   private RecyclerView.Adapter mAdapter;
   private Socket socket;
   {
@@ -85,6 +86,7 @@ public class ChatFragment extends Fragment {
           } catch (JSONException e) {
             e.printStackTrace();
           }
+          addUser("other");
           addMessage(message);
         }
       });
@@ -97,7 +99,7 @@ public class ChatFragment extends Fragment {
 
     mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
     mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-    mAdapter = new MessageAdapter( mMessages);
+    mAdapter = new MessageAdapter( mMessages,mUsers);
     mMessagesView.setAdapter(mAdapter);
 
     ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
@@ -116,6 +118,7 @@ public class ChatFragment extends Fragment {
     String message = mInputMessageView.getText().toString().trim();
     mInputMessageView.setText("");
     addMessage(message);
+    addUser("me");
     JSONObject sendText = new JSONObject();
     try{
       sendText.put("text",message);
@@ -125,6 +128,13 @@ public class ChatFragment extends Fragment {
     }
 
   }
+
+
+  private void addUser(String user){
+    mUsers.add(new User(user));
+
+  }
+
   private void addMessage(String message) {
 
     mMessages.add(new Message(message));

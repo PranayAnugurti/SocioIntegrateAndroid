@@ -16,10 +16,14 @@ public class Message {
 
   //private int mType;
   private String mMessage;
+
+
+
   //private Bitmap mImage;
 
   public Message(String mMessage) {
     this.mMessage=mMessage;
+
   }
   public Message(){};
 
