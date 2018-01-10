@@ -22,6 +22,7 @@ public class HomeActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         Intent intent=new Intent(HomeActivity.this,FriendsActivity.class);
+        intent.putExtra("user_id",getIntent().getStringExtra("user_id"));
         startActivity(intent);
       }
     });

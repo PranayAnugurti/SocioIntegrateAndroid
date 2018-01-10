@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             // App code
             accessToken = loginResult.getAccessToken();
             Constants.user_id=loginResult.getAccessToken().getUserId();
+            Constants.friends_url=Constants.server_url+"/"+Constants.user_id+"/friends";
             //Toast.makeText(MainActivity.this,"Login Successfull!",Toast.LENGTH_SHORT).show();
             Log.d("LOG",
                 "userid=" + loginResult.getAccessToken().getUserId() + "\n" + "token=" + loginResult
@@ -98,12 +99,15 @@ public class MainActivity extends AppCompatActivity {
                           //OR
                           String urlEditField = edittext.getText().toString();
                           Constants.server_url=urlEditField;
-                          new SendUserDetailsAsyncTask()
-                              .execute(Constants.server_url+"/user-details",
-                                  jsonObject);
-                          Intent intent = new Intent(MainActivity.this, SocketActivity.class);
-                          startActivity(intent);
+                          Constants.server_user_details_url=urlEditField+"/user-details";
+                          Constants.friends_url=Constants.server_url+"/"+Constants.user_id+"/friends";
 
+                          new SendUserDetailsAsyncTask()
+                              .execute(Constants.server_user_details_url,
+                                  jsonObject);
+                          Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                          intent.putExtra("user_id",Constants.user_id);
+                          startActivity(intent);
                         }
                       });
 
@@ -111,9 +115,11 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int whichButton) {
                           // what ever you want to do with No option.
                           new SendUserDetailsAsyncTask()
-                              .execute(Constants.server_url+"/user-details",
+                              .execute(Constants.server_user_details_url,
                                   jsonObject);
-                          Intent intent = new Intent(MainActivity.this, SocketActivity.class);
+                          Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                          intent.putExtra("user_id",Constants.user_id);
+
                           startActivity(intent);
                         }
                       });
