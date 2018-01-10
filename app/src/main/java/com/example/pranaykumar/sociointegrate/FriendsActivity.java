@@ -13,9 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.pranaykumar.sociointegrate.FriendsAdapter.ViewHolder;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,8 @@ public class FriendsActivity extends AppCompatActivity {
   private RecyclerView recyclerView;
   private FriendsAdapter mAdapter;
 
+
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -39,6 +45,9 @@ public class FriendsActivity extends AppCompatActivity {
     //mAdapter = new FriendsAdapter(friendList);
     recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     //recyclerView.setAdapter(mAdapter);
+
+
+
   }
 
   private class GetFriendsAsyncTask extends AsyncTask<String, Void, String> {

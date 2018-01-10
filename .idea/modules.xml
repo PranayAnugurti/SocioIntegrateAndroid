@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SocioIntegrate.iml" filepath="$PROJECT_DIR$/SocioIntegrate.iml" />
+      <module fileurl="file://C:\Users\user\Desktop\New folder\SocioIntegrateAndroid\SocioIntegrate.iml" filepath="C:\Users\user\Desktop\New folder\SocioIntegrateAndroid\SocioIntegrate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SocioIntegrateAndroid.iml" filepath="$PROJECT_DIR$/SocioIntegrateAndroid.iml" />
       <module fileurl="file://F:\MNNIT\AndroidDev\kotlin-notepad-master\SocioIntegrate\SocioIntegrateAndroid.iml" filepath="F:\MNNIT\AndroidDev\kotlin-notepad-master\SocioIntegrate\SocioIntegrateAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
