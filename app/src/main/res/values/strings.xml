@@ -22,6 +22,8 @@
   <string name="message_user_left">%s left</string>
   <string name="user_action_typing">is typing</string>
   <string name="ServerUrl">https://sociointegrate.herokuapp.com/</string>
+  <string name="server_user_details_url">http://192.168.0.102:5000/user-details</string>
+  <string name="server_url">http://192.168.0.102:5000</string>
 
 
 </resources>

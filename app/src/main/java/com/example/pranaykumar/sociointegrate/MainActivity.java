@@ -1,10 +1,15 @@
 package com.example.pranaykumar.sociointegrate;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.AccessToken;
@@ -29,10 +34,12 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
   private CallbackManager callbackManager;
+  public Constants constants=new Constants();
   private AccessToken accessToken;
   private TextView txtView;
-  String username;
+  String username,jsonObject;
   String email;
+  Context context=this;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -55,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
           public void onSuccess(final LoginResult loginResult) {
             // App code
             accessToken = loginResult.getAccessToken();
-
+            Constants.user_id=loginResult.getAccessToken().getUserId();
             //Toast.makeText(MainActivity.this,"Login Successfull!",Toast.LENGTH_SHORT).show();
             Log.d("LOG",
                 "userid=" + loginResult.getAccessToken().getUserId() + "\n" + "token=" + loginResult
@@ -69,18 +76,58 @@ public class MainActivity extends AppCompatActivity {
                     // Insert your code here
                     //txtView.setText(object.toString());
                     try {
-
                       object.put("token", String.valueOf(loginResult.getAccessToken().getToken()));
                       Log.d("LOG", object.toString());
-                      new SendUserDetails()
-                          .execute("https://sociointegrate.herokuapp.com/user-details",
-                              object.toString());
+                      jsonObject=object.toString();
+
+                      /*******************************************************/
+                      //AlertDialog for URL Change
+                      AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                      final EditText edittext = new EditText(context);
+                      edittext.setText("http://192.168.0.100:5000");
+                      alert.setMessage("https://sociointegrate.herokuapp.com/ is the default URL"
+                          );
+                      alert.setTitle("Do you want to change the server url?");
+
+                      alert.setView(edittext);
+
+                      alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                          //What ever you want to do with the value
+                          //Editable YouEditTextValue = edittext.getText();
+                          //OR
+                          String urlEditField = edittext.getText().toString();
+                          Constants.server_url=urlEditField;
+                          new SendUserDetailsAsyncTask()
+                              .execute(Constants.server_url+"/user-details",
+                                  jsonObject);
+                          Intent intent = new Intent(MainActivity.this, SocketActivity.class);
+                          startActivity(intent);
+
+                        }
+                      });
+
+                      alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                          // what ever you want to do with No option.
+                          new SendUserDetailsAsyncTask()
+                              .execute(Constants.server_url+"/user-details",
+                                  jsonObject);
+                          Intent intent = new Intent(MainActivity.this, SocketActivity.class);
+                          startActivity(intent);
+                        }
+                      });
+                      alert.show();
+
+
+                      /**********************************/
+
+
                       username = object.getString("name");
                       email = object.getString("email");
                       JSONObject friendsObject = object.getJSONObject("friends");
                       JSONArray friendsArray = friendsObject.getJSONArray("data");
-                      Intent intent = new Intent(MainActivity.this, SocketActivity.class);
-                      startActivity(intent);
+
 
                     } catch (JSONException e) {
                       e.printStackTrace();
@@ -108,51 +155,6 @@ public class MainActivity extends AppCompatActivity {
           }
         });
   }
-    private class SendUserDetails extends AsyncTask<String, Void, String> {
-
-      @Override
-      protected String doInBackground(String... params) {
-
-        String data = "";
-
-        HttpURLConnection httpURLConnection = null;
-        try {
-
-          httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
-          httpURLConnection.setRequestMethod("POST");
-          httpURLConnection.setRequestProperty("Content-type", "application/json");
-          httpURLConnection.setDoOutput(true);
-          DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-          wr.writeBytes(params[1]);
-          wr.flush();
-          wr.close();
-
-          InputStream in = httpURLConnection.getInputStream();
-          InputStreamReader inputStreamReader = new InputStreamReader(in);
-
-          int inputStreamData = inputStreamReader.read();
-          while (inputStreamData != -1) {
-            char current = (char) inputStreamData;
-            inputStreamData = inputStreamReader.read();
-            data += current;
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-        } finally {
-          if (httpURLConnection != null) {
-            httpURLConnection.disconnect();
-          }
-        }
-
-        return data;
-      }
-
-      @Override
-      protected void onPostExecute(String result) {
-        super.onPostExecute(result);
-        Log.e("TAG", result); // this is expecting a response code to be sent from your server upon receiving the POST data
-      }
-    }
 
 
   @Override

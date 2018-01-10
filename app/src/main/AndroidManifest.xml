@@ -43,6 +43,10 @@
     </activity>
     <activity android:name=".SocketActivity">
     </activity>
+    <activity android:name=".HomeActivity">
+    </activity>
+    <activity android:name=".FriendsActivity">
+    </activity>
   </application>
 
 </manifest>
