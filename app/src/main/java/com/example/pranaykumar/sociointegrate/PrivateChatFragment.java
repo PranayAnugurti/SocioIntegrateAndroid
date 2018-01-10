@@ -74,6 +74,7 @@ public class PrivateChatFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+
         //Socket Conncetion Establishment
         socket.connect();
 
@@ -137,15 +138,15 @@ public class PrivateChatFragment extends Fragment {
         addUser("me");
         JSONObject sendText = new JSONObject();
         try {
+
             Constants constants = new Constants();
             PrivateSocketActivity privateSocketActivity = new PrivateSocketActivity();
+            String friend_id = getActivity().getIntent().getStringExtra("friend_id");
+            Log.d("from Priivate Chat", message + " " + constants.user_id + " " + friend_id);
             sendText.put("text", message);
             sendText.put("fromId", constants.user_id);
-            sendText.put("to", privateSocketActivity.friendsId);
+            sendText.put("to", friend_id);
             socket.emit("private", sendText);
-            Log.d("from Priivate Chat", message + " " + constants.user_id + " " + privateSocketActivity.friendsId);
-
-
         } catch (JSONException e) {
 
         }

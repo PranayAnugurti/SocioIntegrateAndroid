@@ -3,9 +3,11 @@ package com.example.pranaykumar.sociointegrate;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class PrivateSocketActivity extends AppCompatActivity {
     String friendsName;
+
     String friendsId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,8 +16,9 @@ public class PrivateSocketActivity extends AppCompatActivity {
         if (extras==null){
             return;
         }
-        String friendsName = extras.getString("friend_name");
-        String friendsId = extras.getString("friend_id");
+         friendsName = extras.getString("friend_name");
+        friendsId = extras.getString("friend_id");
+        Log.d("PRIVATE", "friendsId: "+friendsId);
         setContentView(R.layout.activity_private_socket);
     }
 }

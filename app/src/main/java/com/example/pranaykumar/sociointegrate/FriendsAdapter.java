@@ -49,10 +49,10 @@ Context context;
         viewHolder.getmLayout().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("FRIEND_ID", "onClick: "+friend.getFriend_user_id()+" has been clicked");
                 Intent intent = new Intent(context,PrivateSocketActivity.class);
                 intent.putExtra("friend_name",friend.getFriend_name());
                 intent.putExtra("friend_id",friend.getFriend_user_id());
-                Log.d("FRIEND_ID", "onClick: "+friend.getFriend_user_id()+" has been clicked");
                 view.getContext().startActivity(intent);
             }
         });
