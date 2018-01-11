@@ -39,6 +39,7 @@ public class FriendsActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_friends);
+    Log.d("FRIENDS_activty", "is beign created ");
     //new GetFriendsAsyncTask().execute(Constants.server_url+"/"+getIntent().getStringExtra("user_id")+"/friends");
     new GetFriendsAsyncTask().execute(Constants.friends_url);
     recyclerView = (RecyclerView) findViewById(R.id.friends_recycler_view);
@@ -49,6 +50,7 @@ public class FriendsActivity extends AppCompatActivity {
 
 
   }
+
 
   private class GetFriendsAsyncTask extends AsyncTask<String, Void, String> {
 
@@ -105,6 +107,7 @@ public class FriendsActivity extends AppCompatActivity {
           friendList.add(i,currentFriend);
           i++;
         }
+
         mAdapter=new FriendsAdapter(friendList);
         recyclerView.setAdapter(mAdapter);
       } catch (JSONException e) {

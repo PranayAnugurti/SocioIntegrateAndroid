@@ -17,12 +17,18 @@ public class Message {
   //private int mType;
   private String mMessage;
 
+  public String getMtime() {
+    return mtime;
+  }
+
+  private String mtime;
 
 
   //private Bitmap mImage;
 
-  public Message(String mMessage) {
+  public Message(String mMessage,String time) {
     this.mMessage=mMessage;
+    this.mtime = time;
 
   }
   public Message(){};

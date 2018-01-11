@@ -22,7 +22,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -73,7 +76,7 @@ public class PrivateChatFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        setRetainInstance(true);
 
         //Socket Conncetion Establishment
         socket.connect();
@@ -91,11 +94,12 @@ public class PrivateChatFragment extends Fragment {
                     String message = null;
                     String from = null;
                     String to = null;
+                    String date =null;
                     try {
                         message = data.getString("text").toString();
                         from = data.getString("from").toString();
                         to = data.getString("to").toString();
-
+                         date = data.getString("date").toString();
                         Log.d("from Priivate Chat", message + " " + from + " " + to);
 
                         Log.d("LOG", message);
@@ -103,12 +107,21 @@ public class PrivateChatFragment extends Fragment {
                         e.printStackTrace();
                     }
                     addUser("other");
-                    addMessage(message);
+                    addServerMessage(message,date);
                 }
             });
         }
     };
 
+
+    private void addServerMessage(String message,String date) {
+        mMessages.add(new Message(message,date));
+        // mAdapter = new MessageAdapter(mMessages);
+        Log.d("LOG","mMessages count="+mMessages.size()+"message="+message+" "+date);
+        mAdapter.notifyDataSetChanged();
+        scrollToBottom();
+
+    }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -160,10 +173,12 @@ public class PrivateChatFragment extends Fragment {
     }
 
     private void addMessage(String message) {
+        DateFormat df = new SimpleDateFormat("h:mm a");
+        String time = df.format(Calendar.getInstance().getTime());
 
-        mMessages.add(new Message(message));
+        mMessages.add(new Message(message,time));
         // mAdapter = new MessageAdapter(mMessages);
-        Log.d("LOG", "mMessages count=" + mMessages.size() + "message=" + message);
+        Log.d("LOG", "mMessages count=" + mMessages.size() + "message=" + message+" "+time);
 
         mAdapter.notifyDataSetChanged();
         scrollToBottom();

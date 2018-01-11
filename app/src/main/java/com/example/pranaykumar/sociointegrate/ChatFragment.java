@@ -23,7 +23,10 @@ import com.github.nkzawa.emitter.Emitter.Listener;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +65,8 @@ public class ChatFragment extends Fragment {
     }
   }
 
+
+
   public ChatFragment() {
     // Required empty public constructor
   }
@@ -76,6 +81,7 @@ public class ChatFragment extends Fragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
+    setRetainInstance(true);
 
     //Socket Conncetion Establishment
     socket.connect();
@@ -91,14 +97,25 @@ public class ChatFragment extends Fragment {
         public void run() {
           JSONObject data=(JSONObject)args[0];
           String message = null;
+          String date= null;
           try{
             message=data.getString("text").toString();
-            Log.d("LOG",message);
+            date = data.getString("date").toString();
+            Log.d("LOG",message +" "+date);
           } catch (JSONException e) {
             e.printStackTrace();
           }
           addUser("other");
-          addMessage(message);
+          addServerMessage(message,date);
+        }
+
+        private void addServerMessage(String message,String time) {
+          mMessages.add(new Message(message,time));
+          // mAdapter = new MessageAdapter(mMessages);
+          Log.d("LOG","mMessages count="+mMessages.size()+"message="+message+" "+time);
+          mAdapter.notifyDataSetChanged();
+          scrollToBottom();
+
         }
       });
     }
@@ -147,10 +164,12 @@ public class ChatFragment extends Fragment {
   }
 
   private void addMessage(String message) {
+    DateFormat df = new SimpleDateFormat("h:mm a");
+    String time = df.format(Calendar.getInstance().getTime());
 
-    mMessages.add(new Message(message));
+    mMessages.add(new Message(message,time));
     // mAdapter = new MessageAdapter(mMessages);
-    Log.d("LOG","mMessages count="+mMessages.size()+"message="+message);
+    Log.d("LOG","mMessages count="+mMessages.size()+"message="+message+" "+time);
 
     mAdapter.notifyDataSetChanged();
     scrollToBottom();

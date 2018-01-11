@@ -6,6 +6,12 @@ package com.example.pranaykumar.sociointegrate;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.SuperscriptSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -58,12 +66,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
   public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
 
-
       User user = mUser.get(position);
       if (user.getmUser()=="me"){
         Message message = mMessages.get(position);
+
+
+        //  SpannableString styledString = new SpannableString(message.getMtime());   // index 103 - 112
+
+          // make the subscript text smaller
+        //  styledString.setSpan(new RelativeSizeSpan(0.5f), 0, message.getMtime().length(), 0);
+
+       //   SpannableStringBuilder cs = new SpannableStringBuilder(message.getMtime());
+         // cs.setSpan(new SuperscriptSpan(), 1, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          //cs.setSpan(new RelativeSizeSpan(0.75f), 1, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          //cs.setSpan(new SuperscriptSpan(), 6, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+          //cs.setSpan(new RelativeSizeSpan(0.75f), 6, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
         Log.d("LOG","position="+position);
-        viewHolder.mMessageView.setText(message.getMessage());
+        viewHolder.mMessageView.setText(message.getMessage() );
+        viewHolder.mTimeView.setText(message.getMtime());
           viewHolder.mMessageView.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.user));
         viewHolder.mlayout.setGravity(Gravity.RIGHT);
         //viewHolder.setImage(message.getImage());
@@ -72,6 +94,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         Message message = mMessages.get(position);
         Log.d("LOG","position="+position);
         viewHolder.mMessageView.setText(message.getMessage());
+        viewHolder.mTimeView.setText(message.getMtime());
         viewHolder.mMessageView.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.others));
         viewHolder.mlayout.setGravity(Gravity.LEFT);
         //viewHolder.setImage(message.getImage());
@@ -92,12 +115,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
   public class ViewHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     private TextView mMessageView;
+    private TextView mTimeView;
     private LinearLayout mlayout;
     public ViewHolder(View itemView) {
       super(itemView);
       //mImageView = (ImageView) itemView.findViewById(R.id.image);
       mMessageView = (TextView) itemView.findViewById(R.id.message);
      mlayout = (LinearLayout)itemView.findViewById(R.id.layout);
+    mTimeView = (TextView)itemView.findViewById(R.id.time);
     }
 
     public void setMessage(String message) {
