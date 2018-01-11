@@ -7,7 +7,6 @@ import android.util.Log;
 
 public class PrivateSocketActivity extends AppCompatActivity {
     String friendsName;
-
     String friendsId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
