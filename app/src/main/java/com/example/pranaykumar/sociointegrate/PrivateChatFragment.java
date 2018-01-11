@@ -46,17 +46,7 @@ public class PrivateChatFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     String url = "http://192.168.0.102:5000";
 
-    private Socket socket;
-
-    {
-        try {
-            //socket=IO.socket("https://sociointegrate.herokuapp.com/");
-            socket = IO.socket(Constants.server_url);
-            Log.d("LOG", "server_url=" + Constants.server_url);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    
 
     public PrivateChatFragment() {
         // Required empty public constructor
@@ -66,19 +56,13 @@ public class PrivateChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_priavatechat, container, false);
+      return inflater.inflate(R.layout.fragment_priavatechat, container, false);
     }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
-        //Socket Conncetion Establishment
-        socket.connect();
-
-        socket.on("private", handleIncomingMessages);
+        HomeActivity.socket.on("private", handleIncomingMessages);
     }
 
     private Emitter.Listener handleIncomingMessages = new Emitter.Listener() {
@@ -91,12 +75,15 @@ public class PrivateChatFragment extends Fragment {
                     String message = null;
                     String from = null;
                     String to = null;
+                    String time = null;
                     try {
                         message = data.getString("text").toString();
                         from = data.getString("from").toString();
                         to = data.getString("to").toString();
+                        time=data.getString("date").toString();
 
-                        Log.d("from Priivate Chat", message + " " + from + " " + to);
+
+                        Log.d("from Priivate Chat", message + " " + from + " " + to+time);
 
                         Log.d("LOG", message);
                     } catch (JSONException e) {
@@ -144,9 +131,9 @@ public class PrivateChatFragment extends Fragment {
             String friend_id = getActivity().getIntent().getStringExtra("friend_id");
             Log.d("from Priivate Chat", message + " " + constants.user_id + " " + friend_id);
             sendText.put("text", message);
-            sendText.put("fromId", constants.user_id);
+            sendText.put("fromId", Constants.user_id);
             sendText.put("to", friend_id);
-            socket.emit("private", sendText);
+            HomeActivity.socket.emit("private", sendText);
         } catch (JSONException e) {
 
         }
@@ -176,7 +163,7 @@ public class PrivateChatFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        socket.disconnect();
+        //HomeActivity.socket.disconnect();
     }
 
     public interface OnFragmentInteractionListener {

@@ -51,16 +51,6 @@ public class ChatFragment extends Fragment {
   private RecyclerView.Adapter mAdapter;
   String url="http://192.168.0.102:5000";
 
-  private Socket socket;
-  {
-    try{
-      //socket=IO.socket("https://sociointegrate.herokuapp.com/");
-      socket=IO.socket(Constants.server_url);
-      Log.d("LOG","server_url="+Constants.server_url);
-    }catch (URISyntaxException e){
-      throw new RuntimeException(e);
-    }
-  }
 
   public ChatFragment() {
     // Required empty public constructor
@@ -76,11 +66,7 @@ public class ChatFragment extends Fragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
-
-    //Socket Conncetion Establishment
-    socket.connect();
-    
-    socket.on("message",handleIncomingMessages);
+    HomeActivity.socket.on("message",handleIncomingMessages);
   }
 
   private Emitter.Listener handleIncomingMessages=new Emitter.Listener(){
@@ -133,7 +119,7 @@ public class ChatFragment extends Fragment {
     JSONObject sendText = new JSONObject();
     try{
       sendText.put("text",message);
-      socket.emit("message", sendText);
+      HomeActivity.socket.emit("message", sendText);
     }catch(JSONException e){
 
     }
@@ -162,7 +148,7 @@ public class ChatFragment extends Fragment {
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    socket.disconnect();
+    //HomeActivity.socket.disconnect();
   }
   public interface OnFragmentInteractionListener {
     // TODO: Update argument type and name

@@ -21,7 +21,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private Button friendsBtn,groupChatBtn;
 
-  private Socket socket;
+  public static Socket socket;
 
   {
     try {
@@ -40,23 +40,20 @@ public class HomeActivity extends AppCompatActivity {
 
     friendsBtn=(Button)findViewById(R.id.friendsTextView);
     groupChatBtn=(Button)findViewById(R.id.groupChatTextView);
-
+    JSONObject sendText = new JSONObject();
+    String user_id = null;
+    Constants constants  = new Constants();
+    user_id = constants.user_id;
+    try {
+      sendText.put("id",user_id);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    socket.connect();
+    socket.emit("hello",sendText);
     friendsBtn.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-
-        JSONObject sendText = new JSONObject();
-        String user_id = null;
-        Constants constants  = new Constants();
-        user_id = constants.user_id;
-        try {
-          sendText.put("id",user_id);
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-        socket.connect();
-        socket.emit("hello",sendText);
-
         Intent intent=new Intent(HomeActivity.this,FriendsActivity.class);
         intent.putExtra("user_id",getIntent().getStringExtra("user_id"));
         startActivity(intent);
