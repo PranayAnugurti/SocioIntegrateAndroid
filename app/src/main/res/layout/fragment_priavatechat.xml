@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/background">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#EEEEEE"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:scrollbarStyle="outsideOverlay"
@@ -21,7 +21,8 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingRight="8dp"
+        android:layout_marginBottom="8dp">
 
         <EditText
             android:id="@+id/message_input"
@@ -29,15 +30,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/prompt_message"
-            android:imeActionId="@+id/spacer"
-            android:imeActionLabel="@string/action_send"
-            android:imeOptions="actionSend"
-            android:inputType="text"
-            android:maxLines="1"
+            android:inputType="textMultiLine"
+            android:maxLines="4"
+            android:padding="16dp"
+            android:background="@drawable/others"
             android:singleLine="true" />
 
         <ImageButton
+            android:background="@drawable/circle"
             android:id="@+id/send_button"
+            android:minHeight="40dp"
+            android:minWidth="40dp"
+            android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/action_send"
