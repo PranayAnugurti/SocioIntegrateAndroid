@@ -106,10 +106,8 @@ public class PrivateChatFragment extends Fragment {
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new MessageAdapter(mMessages, mUsers);
         mMessagesView.setAdapter(mAdapter);
-
         ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
         mInputMessageView = (EditText) view.findViewById(R.id.message_input);
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +115,6 @@ public class PrivateChatFragment extends Fragment {
             }
         });
         mAdapter.notifyDataSetChanged();
-
     }
 
     private void sendMessage() {
@@ -131,7 +128,7 @@ public class PrivateChatFragment extends Fragment {
             Constants constants = new Constants();
             PrivateSocketActivity privateSocketActivity = new PrivateSocketActivity();
             friend_id = getActivity().getIntent().getStringExtra("friend_id");
-            Log.d("from Priivate Chat", message + " " + constants.user_id + " " + friend_id);
+            Log.d("from Private Chat", message + " " + constants.user_id + " " + friend_id);
             sendText.put("message", message);
             sendText.put("fromId", Constants.user_id);
             sendText.put("to", friend_id);
