@@ -3,8 +3,6 @@ package com.example.pranaykumar.sociointegrate;
 /**
  * Created by PRANAYKUMAR on 1/7/2018.
  */
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -15,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -62,20 +63,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
       User user = mUser.get(position);
       if (user.getmUser()=="me"){
         Message message = mMessages.get(position);
-        Log.d("LOG","position="+position);
         viewHolder.mMessageView.setText(message.getMessage());
-          viewHolder.mMessageView.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.user));
+        viewHolder.mTimeView.setText(message.getmTime());
+          viewHolder.mMsgLayout.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.user));
         viewHolder.mlayout.setGravity(Gravity.RIGHT);
-        //viewHolder.setImage(message.getImage());
-        Log.d("LOG","MESSAGE="+message.getMessage());
       }else {
         Message message = mMessages.get(position);
-        Log.d("LOG","position="+position);
         viewHolder.mMessageView.setText(message.getMessage());
-        viewHolder.mMessageView.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.others));
+        viewHolder.mTimeView.setText(message.getmTime());
+        viewHolder.mMsgLayout.setBackground(viewHolder.itemView.getContext().getResources().getDrawable(R.drawable.others));
         viewHolder.mlayout.setGravity(Gravity.LEFT);
-        //viewHolder.setImage(message.getImage());
-        Log.d("LOG","MESSAGE="+message.getMessage());
       }
    }
 
@@ -91,13 +88,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 */
   public class ViewHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
-    private TextView mMessageView;
-    private LinearLayout mlayout;
+    private TextView mMessageView,mTimeView;
+    private LinearLayout mlayout,mMsgLayout;
     public ViewHolder(View itemView) {
       super(itemView);
-      //mImageView = (ImageView) itemView.findViewById(R.id.image);
+      mImageView = (ImageView) itemView.findViewById(R.id.imageView);
       mMessageView = (TextView) itemView.findViewById(R.id.message);
+      mTimeView = (TextView) itemView.findViewById(R.id.timeView);
      mlayout = (LinearLayout)itemView.findViewById(R.id.layout);
+     mMsgLayout = (LinearLayout)itemView.findViewById(R.id.msgLayout);
     }
 
     public void setMessage(String message) {

@@ -19,8 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.emitter.Emitter.Listener;
+import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import java.io.InputStream;
@@ -28,8 +30,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +48,7 @@ import org.json.JSONObject;
 
 
 public class ChatFragment extends Fragment {
+
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
   private static final String ARG_PARAM1 = "param1";
@@ -54,39 +63,40 @@ public class ChatFragment extends Fragment {
   private List<Message> mMessages = new ArrayList<Message>();
   private List<User> mUsers = new ArrayList<User>();
   private RecyclerView.Adapter mAdapter;
-  String url="http://192.168.0.102:5000";
+  String url = "http://192.168.0.102:5000";
 
 
   public ChatFragment() {
     // Required empty public constructor
   }
+
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_chat,container,false);
+    return inflater.inflate(R.layout.fragment_chat, container, false);
   }
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
-    new MessagesAsyncTask().execute(Constants.server_url+"/prev-messages");
-    HomeActivity.socket.on("message",handleIncomingMessages);
+    new MessagesAsyncTask().execute(Constants.server_url + "/prev-messages");
+    HomeActivity.socket.on("message", handleIncomingMessages);
 
   }
 
-  private Emitter.Listener handleIncomingMessages=new Emitter.Listener(){
+  private Emitter.Listener handleIncomingMessages = new Emitter.Listener() {
     @Override
     public void call(final Object... args) {
       getActivity().runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          JSONObject data=(JSONObject)args[0];
+          JSONObject data = (JSONObject) args[0];
           String message = null;
-          try{
-            message=data.getString("message").toString();
-            Log.d("LOG",message);
+          try {
+            message = data.getString("message").toString();
+            Log.d("LOG", message);
           } catch (JSONException e) {
             e.printStackTrace();
           }
@@ -103,7 +113,7 @@ public class ChatFragment extends Fragment {
 
     mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
     mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-    mAdapter = new MessageAdapter( mMessages,mUsers);
+    mAdapter = new MessageAdapter(mMessages, mUsers);
     mMessagesView.setAdapter(mAdapter);
 
     ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
@@ -118,34 +128,44 @@ public class ChatFragment extends Fragment {
 
 
   }
-  private void sendMessage(){
+
+  private void sendMessage() {
     String message = mInputMessageView.getText().toString().trim();
     mInputMessageView.setText("");
     addMessage(message);
     addUser("me");
     JSONObject sendText = new JSONObject();
-    try{
-      sendText.put("message",message);
-      sendText.put("from",Constants.user_id);
-      HomeActivity.socket.emit("message", sendText);
-    }catch(JSONException e){
+    try {
+      sendText.put("message", message);
+      sendText.put("from", Constants.user_id);
+      HomeActivity.socket.emit("message", sendText, new Ack() {
+        @Override
+        public void call(Object... args) {
+          Log.d("LOG", "Sent");
+        }
+
+      });
+    } catch (JSONException e) {
 
     }
 
   }
 
 
-  private void addUser(String user){
+  private void addUser(String user) {
     mUsers.add(new User(user));
 
   }
 
   private void addMessage(String message) {
-
-    mMessages.add(new Message(message,Constants.user_id,"",""));
+    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    DateFormat tf = new SimpleDateFormat("HH:mm");
+    String date = df.format(Calendar.getInstance().getTime());
+    String time = tf.format(Calendar.getInstance().getTime());
+    Log.d("LOG","time="+time+"::date="+date);
+    Message msg=new Message(message, Constants.user_id, "",date,time);
+    mMessages.add(msg);
     // mAdapter = new MessageAdapter(mMessages);
-    Log.d("LOG","mMessages count="+mMessages.size()+"message="+message);
-
     mAdapter.notifyDataSetChanged();
     scrollToBottom();
   }
@@ -153,16 +173,20 @@ public class ChatFragment extends Fragment {
   private void scrollToBottom() {
     mMessagesView.scrollToPosition(mAdapter.getItemCount() - 1);
   }
+
   @Override
   public void onDestroyView() {
     super.onDestroyView();
     //HomeActivity.socket.disconnect();
     HomeActivity.socket.off("message");
   }
+
   public interface OnFragmentInteractionListener {
+
     // TODO: Update argument type and name
     public void onFragmentInteraction(Uri uri);
   }
+
   private class MessagesAsyncTask extends AsyncTask<String, Void, String> {
 
     @Override
@@ -181,7 +205,7 @@ public class ChatFragment extends Fragment {
       wr.writeBytes(params[1]);
       wr.flush();
       wr.close();*/
-        Log.d("LOG",params[0]);
+        Log.d("LOG", params[0]);
         InputStream in = httpURLConnection.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(in);
 
@@ -205,22 +229,40 @@ public class ChatFragment extends Fragment {
     @Override
     protected void onPostExecute(String result) {
       super.onPostExecute(result);
-      Log.e("LOG", "RESULT FROM SERVER:"+result); // this is expecting a response code to be sent from your server upon receiving the POST data
+      Log.e("LOG", "RESULT FROM SERVER:"
+          + result); // this is expecting a response code to be sent from your server upon receiving the POST data
       try {
-        JSONArray messagesArray=new JSONArray(result);
-        int i=0;
+        JSONArray messagesArray = new JSONArray(result);
+        int i = 0;
         while (i < messagesArray.length()) {
 
           JSONObject message = messagesArray.getJSONObject(i);
-          Message currentMessage=new Message(message.getString("message"),
-              message.getString("from"),
+          Message currentMessage = new Message(message.getString("message"),
+              //message.getString("from"),
+              "",
               "",
               message.getString("date"));
-          if(Constants.user_id.equals(message.getString("from")))
+          if (Constants.user_id.equals(""))
             addUser("me");
           else
             addUser("else");
-          mMessages.add(i,currentMessage);
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+          sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+          dateFormat.setTimeZone(Calendar.getInstance().getTimeZone());
+          SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+          timeFormat.setTimeZone(Calendar.getInstance().getTimeZone());
+          Date d = null;
+          try {
+            d = sdf.parse(message.getString("date"));
+          } catch (ParseException e) {
+            e.printStackTrace();
+          }
+          String formattedTime = timeFormat.format(d);
+          String formattedDate = dateFormat.format(d);
+          currentMessage.setmTime(formattedTime);
+          currentMessage.setmDate(formattedDate);
+          mMessages.add(i, currentMessage);
           mAdapter.notifyDataSetChanged();
           scrollToBottom();
 
@@ -228,6 +270,7 @@ public class ChatFragment extends Fragment {
         }
       } catch (JSONException e) {
         e.printStackTrace();
+
       }
     }
   }

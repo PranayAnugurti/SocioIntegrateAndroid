@@ -133,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
                       email = object.getString("email");
                       JSONObject friendsObject = object.getJSONObject("friends");
                       JSONArray friendsArray = friendsObject.getJSONArray("data");
-
-
                     } catch (JSONException e) {
                       e.printStackTrace();
                     }

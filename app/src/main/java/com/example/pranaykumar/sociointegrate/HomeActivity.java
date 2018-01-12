@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.emitter.Emitter.Listener;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -40,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
 
     friendsBtn=(Button)findViewById(R.id.friendsTextView);
     groupChatBtn=(Button)findViewById(R.id.groupChatTextView);
-    JSONObject sendText = new JSONObject();
+    final JSONObject sendText = new JSONObject();
     String user_id = null;
     Constants constants  = new Constants();
     user_id = constants.user_id;
@@ -49,7 +50,19 @@ public class HomeActivity extends AppCompatActivity {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    socket.connect();
+   /* socket.connect();
+    socket.on("connect", new Listener() {
+      @Override
+      public void call(Object... args) {
+       socket.emit("authentication",sendText);
+       socket.on("authenticated", new Listener() {
+         @Override
+         public void call(Object... args) {
+
+         }
+       });
+      }
+    });*/
     socket.emit("hello",sendText);
     friendsBtn.setOnClickListener(new OnClickListener() {
       @Override
