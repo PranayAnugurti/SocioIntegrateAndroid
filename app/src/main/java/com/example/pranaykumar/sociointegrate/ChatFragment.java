@@ -9,10 +9,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +68,10 @@ public class ChatFragment extends Fragment {
   private RecyclerView.Adapter mAdapter;
   String url = "http://192.168.0.102:5000";
 
+  private static final int TYPING_TIMER_LENGTH = 600;
+  private boolean mTyping = false;
+  private Handler mTypingHandler = new Handler();
+  private String mUsername;
 
   public ChatFragment() {
     // Required empty public constructor
@@ -83,8 +90,13 @@ public class ChatFragment extends Fragment {
     setHasOptionsMenu(true);
     new MessagesAsyncTask().execute(Constants.server_url + "/global-msgs?skip=0");
     HomeActivity.socket.on("message", handleIncomingMessages);
-
+    HomeActivity.socket.on("typing", onTyping);
+    HomeActivity.socket.on("stop typing", onStopTyping);
   }
+
+
+
+
 
   private Emitter.Listener handleIncomingMessages = new Emitter.Listener() {
     @Override
@@ -119,14 +131,105 @@ public class ChatFragment extends Fragment {
     ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
     mInputMessageView = (EditText) view.findViewById(R.id.message_input);
 
+
+    mInputMessageView.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (null == Constants.user_id) return;
+        if (!HomeActivity.socket.connected()) return;
+
+        if (!mTyping) {
+          mTyping = true;
+          HomeActivity.socket.emit("typing");
+        }
+
+        mTypingHandler.removeCallbacks(onTypingTimeout);
+        mTypingHandler.postDelayed(onTypingTimeout, TYPING_TIMER_LENGTH);
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+      }
+    });
+
     sendButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         sendMessage();
       }
     });
+  }
+
+  private Emitter.Listener onTyping = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+      getActivity().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          JSONObject data = (JSONObject) args[0];
+          String username;
+          try {
+            username = data.getString("username");
+          } catch (JSONException e) {
+            Log.e("TAG", e.getMessage());
+            return;
+          }
+          addTyping(username);
+        }
+      });
+    }
+  };
 
 
+  private Emitter.Listener onStopTyping = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+      getActivity().runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          JSONObject data = (JSONObject) args[0];
+          String username;
+          try {
+            username = data.getString("username");
+          } catch (JSONException e) {
+            Log.e("TAG", e.getMessage());
+            return;
+          }
+          removeTyping(username);
+        }
+      });
+    }
+  };
+
+  private Runnable onTypingTimeout = new Runnable() {
+    @Override
+    public void run() {
+      if (!mTyping) return;
+
+      mTyping = false;
+      HomeActivity.socket.emit("stop typing");
+    }
+  };
+
+  private void addTyping(String username) {
+    mMessages.add(new Message.Builder(Message.TYPE_ACTION)
+            .username(username).build());
+    mAdapter.notifyItemInserted(mMessages.size() - 1);
+    scrollToBottom();
+  }
+
+  private void removeTyping(String username) {
+    for (int i = mMessages.size() - 1; i >= 0; i--) {
+      Message message = mMessages.get(i);
+      if (message.getType() == Message.TYPE_ACTION && message.getmFromId().equals(username)) {
+        mMessages.remove(i);
+        mAdapter.notifyItemRemoved(i);
+      }
+    }
   }
 
   private void sendMessage() {
@@ -179,6 +282,8 @@ public class ChatFragment extends Fragment {
     super.onDestroyView();
     //HomeActivity.socket.disconnect();
     HomeActivity.socket.off("message");
+    HomeActivity.socket.off("typing",onTyping);
+    HomeActivity.socket.off("stop typing",onStopTyping);
   }
 
   public interface OnFragmentInteractionListener {
