@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toolbar;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -201,7 +202,7 @@ public class PrivateChatFragment extends Fragment {
       mTyping = false;
       JSONObject sendText = new JSONObject();
       if (!mTyping) {
-        mTyping = true;
+        mTyping = false;
         try {
           sendText.put("from", Constants.user_id);
           sendText.put("to", friend_id);
@@ -217,11 +218,21 @@ public class PrivateChatFragment extends Fragment {
 
     private void addTyping(String username) {
 
+
+      Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+      getActivity().setActionBar(toolbar);
+      getActivity().getActionBar().setTitle("Anyonymous Chat");
+      getActivity().getActionBar().setSubtitle("Typing...");
+
     }
 
     private void removeTyping(String username) {
 
-      }
+      Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+      getActivity().setActionBar(toolbar);
+      getActivity().getActionBar().setTitle("Anyonymous Chat");
+      getActivity().getActionBar().setSubtitle(null);
+    }
 
     private void sendMessage() {
       String message = mInputMessageView.getText().toString().trim();

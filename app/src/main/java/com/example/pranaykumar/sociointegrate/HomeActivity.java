@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.Toolbar;
+
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.emitter.Emitter.Listener;
 import com.github.nkzawa.socketio.client.IO;
@@ -34,8 +36,11 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_home);
 
+    setContentView(R.layout.activity_home);
+   Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+   setActionBar(toolbar);
+   getActionBar().setTitle("Home Activity");
     friendsBtn = (Button) findViewById(R.id.friendsTextView);
     groupChatBtn = (Button) findViewById(R.id.groupChatTextView);
     final JSONObject sendText = new JSONObject();
@@ -145,14 +150,14 @@ public class HomeActivity extends AppCompatActivity {
     groupChatBtn.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        if (Constants.isConnected == true) {
+        //if (Constants.isConnected == true) {
           Intent intent = new Intent(HomeActivity.this, SocketActivity.class);
           intent.putExtra("user_id", Constants.user_id);
           startActivity(intent);
-        } else {
-          Toast.makeText(getApplicationContext(), "Not Connected to Server", Toast.LENGTH_SHORT)
-              .show();
-        }
+       // } else {
+         // Toast.makeText(getApplicationContext(), "Not Connected to Server", Toast.LENGTH_SHORT)
+           //   .show();
+       // }
       }
     });
   }

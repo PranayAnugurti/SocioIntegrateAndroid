@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                       //AlertDialog for URL Change
                       AlertDialog.Builder alert = new AlertDialog.Builder(context);
                       final EditText edittext = new EditText(context);
-                      edittext.setText("http://192.168.0.100:5000");
+                      edittext.setText("http://192.168.0.104:5000");
                       alert.setMessage("https://sociointegrate.herokuapp.com/ is the default URL"
                           );
                       alert.setTitle("Do you want to change the server url?");
