@@ -9,4 +9,5 @@ public class Constants {
   public static String server_user_details_url=server_url+"/user-details";
   public static String user_id="1579634072130862";
   public static String friends_url="/"+user_id+"/friends";
+  public static boolean isConnected=false;
 }

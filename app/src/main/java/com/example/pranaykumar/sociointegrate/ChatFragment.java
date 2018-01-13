@@ -81,7 +81,7 @@ public class ChatFragment extends Fragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setHasOptionsMenu(true);
-    new MessagesAsyncTask().execute(Constants.server_url + "/prev-messages");
+    new MessagesAsyncTask().execute(Constants.server_url + "/global-msgs?skip=0");
     HomeActivity.socket.on("message", handleIncomingMessages);
 
   }
@@ -238,14 +238,13 @@ public class ChatFragment extends Fragment {
 
           JSONObject message = messagesArray.getJSONObject(i);
           Message currentMessage = new Message(message.getString("message"),
-              //message.getString("from"),
-              "",
+              message.getString("from"),
               "",
               message.getString("date"));
-          if (Constants.user_id.equals(""))
+          if (Constants.user_id.equals(message.getString("from")))
             addUser("me");
           else
-            addUser("else");
+            addUser("other");
           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
           sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
           SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
